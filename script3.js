@@ -1,66 +1,74 @@
-let addCardBtn=document.querySelector('#addCard');
-let todoContainer=document.querySelector('#todo');
+let addCardBtn =document.getElementById('addCard');
+let todoContainer=document.getElementById('todo');
 
-
-addCardBtn.addEventListener("click",addTask);
- let count=100000;
-
-function addTask(){
+let count=1;
+addCardBtn.addEventListener("click",()=>{
+    let superCard=document.createElement("div");
     let card=document.createElement("div");
-    card.id= `card-${count++}`
     card.className="card";
+    card.id="card"+count++;
     card.innerText="Test Card";
-    card.setAttribute("contenteditable","true");// this line will help to edit the above text
-    cardParentDiv.append(card);
-    todoContainer.append(cardParentDiv);
-    card.focus();
 
+    card.setAttribute("contenteditable","true");
+    card.setAttribute("draggable","true");
+    superCard.append(card);
+    todoContainer.append(superCard);
 
-    // dragstart
-    addCardBtn.addEventListener("dragstart",(eventDetails)=>{
-        let draggedCard=eventDetails.target;
-        // we store that unique data of the element
-        eventDetails.dataTransfer.setData("text/plan",draggedCard.id);
-        draggedCard.style.opacity=0.5;
+    card.addEventListener("click",(event_details)=>{
+        let clickedCard=event_details.target;
+        if(clickedCard.innerText=="Test Card"){
+            clickedCard.innerText="";
+
+        }
     })
+    card.addEventListener("blur",(event_details)=>{
+        let blurredCard=event_details.target;
+        // get parent of the blurred card
+        let parent =blurredCard.parentElement;
+        
+        // delet the card if it is empty
 
-    // dragend
-    addCardBtn.addEventListener("dragend",(eventDetails)=>{
-        dragged.style.opacity=1;
+        if(blurredCard.innerText==""){
+            blurredCard.remove();
+        }
     })
-
-    // drop 
-    // dragenter
-    // dragover
-
-    let todo=document.querySelector("#todo");
-    let progress=document.querySelector('#progress');
-    let done=document.querySelector('#done');
-
-    // todo.addEventListener("dragover",(eventDetails)=>{
-    //     eventDetails.preventDefault();
+    // dragstart event
+    // dragend event
+    card.addEventListener("dragstart",(event_details)=>{
+        card.style.opacity="0.2";
+        event_details.dataTransfer.setData("text",card.id);
+    })
+    card.addEventListener("dragend",(event_details)=>{
+        card.style.opacity="1.0";
+    })
+    // dragover,dragenter,drop 
+    // todoContainer.addEventListener("dragover",(event_details)=>{
+    //     event_details.preventDetails();
     // })
-    // todo.addEventListener("dragenter",(eventDetails)=>{
-    //     eventDetails.preventDefault();
+    // todoContainer.addEventListener("dragenter",(event_details)=>{
+    //     event_details.preventDefault();
     // })
-    // todo.addEventListener("drop",(eventDetails)=>{
-    //     eventDetails.preventDefault();
+    // todoContainer.addEventListener("drop",(event_details)=>{
+    //     event_details.preventDefault();
     // })
 
-    let dragEvents=["dragover","dragenter","drop"];
-    dragEvents.forEach((dropEvent)=>{
-         let columns=document.querySelectorAll(".column");
-         for(let c of columns){ // todo,progress,done
-            c.addEventListener(dropEvent,(eventDetails)=>{
-                eventDetails.preventDefault(); // will prevent of an element to drag over an element while dragging
-            if(dropEvent=="drop"){
-                // get that id of the card that has beeen dragged here
-                let cardId=eventDetails.dataTransfer.getData("text/plan");
-                let draggedCard=document.querySelector(`#${cardId}`);
-                let currentColumn=eventDetails.target;
-                currentColumn.append(draggedCard);
+    // progress, done
+    let dragEvents=["dragover","dragenter","drop"]
+    dragEvents.forEach((drag)=>{ 
+        let container=document.querySelectorAll(".column");
+
+        for(let t of container){
+            t.addEventListener(drag,(event_details)=>{
+                event_details.preventDefault();
+        
+            if((drag=="drop")){
+                let cardId=event_details.dataTransfer.getData("text");
+                let draggedCard=document.getElementById(cardId);
+                let columnToBeMoved=event_details.target;
+                columnToBeMoved.append(draggedCard);
             }
         })
-         }
+        }
     })
-} 
+
+})
